@@ -1,13 +1,16 @@
 var createError = require('http-errors');
 var express = require('express');
+var session = require('express-session')
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+const user = require('./lib/middleware/user')
 const register = require('./routes/register');
 const login = require('./routes/login');
+const messages = require('./lib/messages');
 
 var app = express();
 
@@ -19,7 +22,11 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(session());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(user);
+app.use(messages);
+app.use(app.router);
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
